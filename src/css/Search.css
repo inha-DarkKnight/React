@@ -1,0 +1,89 @@
+/* Search.css */
+
+.search-main-container {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap; /* 필요한 경우 줄바꿈을 허용 */
+    flex-direction: column;
+    align-items: center;
+    width: 80%;
+    margin: 50px auto;
+  }
+
+  
+  .monitor-name-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    margin-bottom: 20px;
+    justify-content: center; /* 중앙 정렬 추가 */
+  }
+  
+  .monitor-name-label {
+    
+    margin-right: 5px; /* 간격 조절 */
+    font-weight: bold;
+  }
+  
+  .monitor-name-input {
+    width: 180px; /* 너비 설정 */
+    border: none;
+    outline: none;
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin-left: 20px;
+  }
+  
+  .search-container {
+    background-color: rgba(255, 85, 85, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 10px;
+    justify-content: space-between;
+  }
+  
+  .search-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1;
+  }
+
+  @media (max-width: 1000px) {
+    .search-container {
+        flex-direction: column;
+        flex-basis: 100%;
+    }
+  }
+  
+  .search-label {
+    font-weight: bold;
+    margin-right: 10px;
+  }
+  
+  .search-item input[type="text"],
+  .search-item input[type="date"] {
+    border: none;
+    border-bottom: 1px solid #000;
+    outline: none;
+    flex-grow: 2;
+    background-color: transparent; /* 투명한 배경 */
+  }
+  
+  .search-button {
+    background-color: #ff5555;
+    color: white;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 50%;
+  }
+  

@@ -1,0 +1,13 @@
+.no-sits {
+    display: flex;
+    justify-content: center;   /* 가로 중앙 정렬 */
+    height: 100vh;             /* 뷰포트 높이를 100%로 설정 */
+}
+
+.no-sits span {
+    margin-top: 50px;
+    text-align: center;
+    font-family: 'Noto_Sans', sans-serif;
+    font-size: 30px;
+    font-weight: 900;
+}
