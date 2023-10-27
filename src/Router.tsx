@@ -26,7 +26,7 @@ function AppContent() {
         classNames="fade"
       >
         <div>
-          {/* 헤더를 포함하지 않을 조건이 아닌 경우에만 헤더 렌더링 */}
+          {/* 헤더를 포함하지 않을 조건이 아닌 경우에만 헤더 렌더링. */}
           {!isHeaderExcluded && <Head />}
           <Routes location={location}>
             <Route path="/" element={<Main />} />
