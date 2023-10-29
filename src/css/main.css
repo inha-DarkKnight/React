@@ -42,5 +42,8 @@ body, html {
   padding: 0;
   font-family: 'Noto_Sans', sans-serif;
   font-weight: 500;
-  background-color: rgb(226, 226, 226)
+  background-color: rgb(226, 226, 226);
+  height: 100%;
+  min-height: 100vh
 }
+
