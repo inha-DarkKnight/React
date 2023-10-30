@@ -55,7 +55,7 @@
     flex: 1;
   }
 
-  @media (max-width: 1000px) {
+  @media (max-width: 1200px) {
     .search-container {
         flex-direction: column;
         flex-basis: 100%;

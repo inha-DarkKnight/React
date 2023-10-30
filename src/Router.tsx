@@ -4,6 +4,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import './css/fade.css';
 import Main from './Start/Main';
 import Search from './Main/Search';
+import MonitorPage from './MyPage/MonitorPage';
 import Head from './Main/Header';
 
 function App() {
@@ -19,22 +20,23 @@ function AppContent() {
   const isHeaderExcluded = location.pathname === '/' || location.pathname === '/register';
 
   return (
-    <TransitionGroup>
-      <CSSTransition
-        key={location.key}
-        timeout={450}
-        classNames="fade"
-      >
-        <div>
-          {/* 헤더를 포함하지 않을 조건이 아닌 경우에만 헤더 렌더링. */}
-          {!isHeaderExcluded && <Head />}
+    <div>
+      {!isHeaderExcluded && <Head />} {/* 헤더필요할때는 헤더넣기 */}
+      
+      <TransitionGroup>
+        <CSSTransition
+          key={location.key}
+          timeout={450}
+          classNames="fade"
+        >
           <Routes location={location}>
             <Route path="/" element={<Main />} />
             <Route path="/search" element={<Search />} />
+            <Route path="/monitor" element={<MonitorPage />} />
           </Routes>
-        </div>
-      </CSSTransition>
-    </TransitionGroup>
+        </CSSTransition>
+      </TransitionGroup>
+    </div>
   );
 }
 

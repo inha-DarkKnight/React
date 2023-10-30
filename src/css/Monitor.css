@@ -1,0 +1,43 @@
+.monitor-container {
+    padding: 20px;
+    width: 95%;
+}
+
+.monitor-wrapper {
+    position: relative;
+    margin-bottom: 30px;
+}
+
+.monitor-name {
+    font-size: 15px;
+    margin-bottom: 10px;
+}
+
+.monitor-box {
+    position: relative;
+    background-color: rgba(144, 238, 144, 0.4);
+    padding: 15px;
+    border-radius: 5px;
+}
+
+.monitor-details {
+    display: flex;
+    flex-direction: row;
+}
+.monitor-details div{
+    font-weight: bold;
+    margin-left: 20px;
+}
+
+.delete-button {
+    position: absolute;
+    right: -55px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background: url('../images/delete.png') no-repeat center center;
+    background-size: cover;
+    border: none;
+    cursor: pointer;
+}

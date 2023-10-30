@@ -43,7 +43,7 @@ function Info({ isOpen, data, onClose }: InfoProps) {
     };
 
     return (
-        <div className="info-overlay" onClick={handleBackgroundClick}>
+        <div className="info-overlay info-fade-in-down" onClick={handleBackgroundClick}>
             <div className="info-popup">
                 {data.map((stop, index) => {
                     const duration = calculateDuration(stop.출발, stop.도착);
