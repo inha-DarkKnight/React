@@ -1,0 +1,51 @@
+
+> a@0.1.0 build
+> react-scripts build
+
+Creating an optimized production build...
+Compiled with warnings.
+
+[eslint] 
+src\Main\List.tsx
+  Line 84:25:   The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+  Line 100:25:  The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src\Main\Search.tsx
+  Line 9:10:   'useSearch' is defined but never used                                          @typescript-eslint/no-unused-vars
+  Line 10:10:  'SearchButton' is defined but never used                                       @typescript-eslint/no-unused-vars
+  Line 77:12:  Imported JSX component Err_Comp must be in PascalCase or SCREAMING_SNAKE_CASE  react/jsx-pascal-case
+
+src\MyPage\Monitor.tsx
+  Line 3:8:  'Head' is defined but never used  @typescript-eslint/no-unused-vars
+
+src\Start\Main.tsx
+  Line 8:10:   'useLogin' is defined but never used                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+  Line 9:10:   'LoginButton' is defined but never used                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  Line 10:10:  'SignupButton' is defined but never used                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+  Line 43:9:   The href attribute requires a valid value to be accessible. Provide a valid, navigable address as the href value. If you cannot provide a valid href, but still need the element to resemble a link, use a button and change it with appropriate styles. Learn more: https://github.com/jsx-eslint/eslint-plugin-jsx-a11y/blob/HEAD/docs/rules/anchor-is-valid.md  jsx-a11y/anchor-is-valid
+
+src\Start\Register.tsx
+  Line 1:27:  'useEffect' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+File sizes after gzip:
+
+  80.31 kB  build\static\js\main.022c3691.js
+  36.64 kB  build\static\css\main.cb84e05c.css
+  1.77 kB   build\static\js\787.037d72d9.chunk.js
+
+The project was built assuming it is hosted at /.
+You can control this with the homepage field in your package.json.
+
+The build folder is ready to be deployed.
+You may serve it with a static server:
+
+  npm install -g serve
+  serve -s build
+
+Find out more about deployment here:
+
+  https://cra.link/deployment
+
