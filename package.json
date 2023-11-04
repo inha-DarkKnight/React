@@ -47,6 +47,6 @@
   },
   "devDependencies": {
     "@types/react-flatpickr": "^3.8.10",
-    "@babel/plugin-proposal-private-property-in-object": "^1.0.0"
+    "@babel/plugin-proposal-private-property-in-object": "^7.0.0"
   }
 }
