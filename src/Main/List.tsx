@@ -1,19 +1,11 @@
 import React, { useState } from 'react';
 import '../css/List.css'
 import Info from './Info'
+import { Stopover } from '../type/types';
 
-interface Stopover {
-    항공사: string;
-    코드 : string;
-    출발: Date;
-    도착: Date;
-    우등석여부 : string;
-    인터넷가격: number;
-    출발공항: string;
-    도착공항: string;
-  }
+
   
-  interface FlightData {
+interface FlightData {
     stopover?: Stopover[];
   }
 
@@ -23,6 +15,7 @@ interface ListProps {
 }
 
 function List({ title, data }: ListProps) {
+
     const [isOpen, setIsOpen] = useState(false);
     const [infoData, setInfoData] = useState<Stopover[] | null>(null);
   
@@ -43,6 +36,27 @@ function List({ title, data }: ListProps) {
         return `${hours}시간 ${minutes}분`;
       };
 
+    const handleRegisterMonitoring = async (flightData: FlightData, email: string) => {
+        const response = await fetch('/monitoring/register', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title,
+                flightData,
+                email
+            })
+        });
+
+        if (response.ok) {
+            console.log("감시 항목이 성공적으로 등록되었습니다.");
+            window.alert('감시 항목 등록성공');
+        } else {
+            console.error("감시 항목 등록에 실패했습니다.");
+            window.alert('감시 항목 등록 실패, 네트워크 에러');
+        }
+    };
 
     return (
         <div className="list-container">
@@ -50,17 +64,16 @@ function List({ title, data }: ListProps) {
           <table>
           <thead>
             <tr>
-                <th></th>
+                <th>항공사</th>
                 <th>구분</th>
                 <th>코드</th>
                 <th>출발시간</th>
                 <th>도착시간</th>
-                <th>우등석여부</th>
-                <th>인터넷가격</th>
-                <th>출발공항</th>
-                <th>도착공항</th>
+                <th>가격</th>
+                <th>출발지</th>
+                <th>도착지</th>
                 <th>소요시간</th>
-                <th>예약링크</th>
+                <th>감시등록</th>
             </tr>
             </thead>
             <tbody>
@@ -68,17 +81,16 @@ function List({ title, data }: ListProps) {
                 const isFirstStopover = flight.stopover && flight.stopover[0];
                 const isLastStopover = flight.stopover && flight.stopover[flight.stopover.length - 1];
     
-                const totalInternetPrice = flight.stopover ? flight.stopover.reduce((sum, stop) => sum + stop.인터넷가격, 0) : 0;
+                const totalInternetPrice = flight.stopover ? flight.stopover.reduce((sum, stop) => sum + stop.price, 0) : 0;
                         // 소요시간 계산
                 let duration = 'N/A';
                 if (isFirstStopover && isLastStopover) {
-                    duration = calculateDuration(isFirstStopover.출발, isLastStopover.도착);
+                    duration = calculateDuration(isFirstStopover.departureDate, isLastStopover.destinationDate);
                 }
 
                 return (
                   <tr key={index}>
-                    <td>{isFirstStopover ? isFirstStopover.항공사 : 'N/A'}</td>
-                    <td>
+                    <td>{isFirstStopover ? isFirstStopover.airline : 'N/A'}</td>
                     <td>
                       {flight.stopover && flight.stopover.length === 1 ? "직항" : (
                         <a href="#" onClick={(e) => {
@@ -88,16 +100,14 @@ function List({ title, data }: ListProps) {
                           경유
                         </a>)}
                     </td>
-                    </td>
-                    <td>{isFirstStopover ? isFirstStopover.코드 : 'N/A'}</td>
-                    <td>{isFirstStopover ? isFirstStopover.출발.toLocaleTimeString() : 'N/A'}</td>
-                    <td>{isLastStopover ? isLastStopover.도착.toLocaleTimeString() : 'N/A'}</td>
-                    <td>{isFirstStopover ? isFirstStopover.우등석여부 : 'N/A'}</td>
+                    <td>{isFirstStopover ? isFirstStopover.flightNumber : 'N/A'}</td>
+                    <td>{isFirstStopover ? isFirstStopover.departureDate.toLocaleTimeString() : 'N/A'}</td>
+                    <td>{isLastStopover ? isLastStopover.destinationDate.toLocaleTimeString() : 'N/A'}</td>
                     <td>{totalInternetPrice}</td>
-                    <td>{isFirstStopover ? isFirstStopover.출발공항 : 'N/A'}</td>
-                    <td>{isLastStopover ? isLastStopover.도착공항 : 'N/A'}</td>
+                    <td>{isFirstStopover ? isFirstStopover.departure : 'N/A'}</td>
+                    <td>{isLastStopover ? isLastStopover.destination : 'N/A'}</td>
                     <td>{duration}</td>
-                    <td><a href="#">바로가기</a></td>
+                    <td><button onClick={() => handleRegisterMonitoring(flight, 'example@example.com')}>등록</button></td>
                   </tr>
                 );
               })}

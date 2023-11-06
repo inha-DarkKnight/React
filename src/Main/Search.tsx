@@ -5,20 +5,11 @@ import Flatpickr from "react-flatpickr";
 import '../css/main.css'
 import '../css/Search.css';
 import "flatpickr/dist/themes/material_green.css";
-
-function useSearch(){}
-function SearchButton(){}
+import { title } from 'process';
 
 
 
 function Search() {
-  const [showError, setShowError] = useState(false);
-  const [monitorName, setMonitorName] = useState("");
-  const [airline, setAirline] = useState("");
-  const [destination, setDestination] = useState("");
-  const [departure, setDeparture] = useState("");
-  const [date, setDate] = useState("");
-  const [hasSearched, setHasSearched] = useState(false);
 
   
 
@@ -26,59 +17,101 @@ function Search() {
     {
       stopover: [
         {
-          항공사: "ASIANA AIRLINES",
-          코드: "OZ0108",
-          출발: new Date("2023-01-01T18:30:00"),
-          도착: new Date("2023-01-01T19:30:00"),
-          우등석여부: "일반석",
-          인터넷가격: 320700,
-          출발공항: "인천국제공항",
-          도착공항: "오사카"
+          airline: "ASIANA AIRLINES",
+          flightNumber: "OZ0108",
+          departureDate: new Date("2023-01-01T18:30:00"),
+          destinationDate: new Date("2023-01-01T19:30:00"),
+          price: 320700,
+          departure: "인천국제공항",
+          destination: "오사카",
+          link: "https://www.asianaairlines.com",
+          isSoldOut: false
         },
         {
-          항공사: "ASIANA AIRLINES",
-          코드: "OZ0110",
-          출발: new Date("2023-01-01T20:00:00"),
-          도착: new Date("2023-01-01T21:00:00"),
-          우등석여부: "일반석",
-          인터넷가격: 200000,
-          출발공항: "오사카",
-          도착공항: "도쿄 나리타"
+          airline: "ASIANA AIRLINES",
+          flightNumber: "OZ0110",
+          departureDate: new Date("2023-01-01T20:00:00"),
+          destinationDate: new Date("2023-01-01T21:00:00"),
+          price: 200000,
+          departure: "오사카",
+          destination: "도쿄 나리타",
+          link: "https://www.asianaairlines.com",
+          isSoldOut: false
         }
       ]
     },
     {
       stopover: [
         {
-          항공사: "AIR SEOUL",
-          코드: "RS0704",
-          출발: new Date("2023-01-01T20:25:00"),
-          도착: new Date("2023-01-01T22:50:00"),
-          우등석여부: "일반석",
-          인터넷가격: 420700,
-          출발공항: "인천국제공항",
-          도착공항: "도쿄 나리타"
+          airline: "AIR SEOUL",
+          flightNumber: "RS0704",
+          departureDate: new Date("2023-01-01T20:25:00"),
+          destinationDate: new Date("2023-01-01T22:50:00"),
+          price: 420700,
+          departure: "인천국제공항",
+          destination: "도쿄 나리타",
+          link: "https://www.airseoul.com",
+          isSoldOut: false
         }
       ]
     }
   ];
+  
 
-  const handleSearch = () => {
-    if (monitorName || airline || destination || departure || date) {
+  const [showError, setShowError] = useState(false);
+  const [monitorName, setMonitorName] = useState("");
+  const [airline, setAirline] = useState("");
+  const [destination, setDestination] = useState("");
+  const [departure, setDeparture] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [hasSearched, setHasSearched] = useState(false);
+  const [flightData, setFlightData] = useState([]);
+
+  async function handleSearch() {
+    if (monitorName && airline && destination && departure && date) {
       setShowError(false);
-      setHasSearched(true);  // 검색 버튼을 클릭했음을 표시
+      setHasSearched(true); 
+
+      try {
+        const formattedDate = date.toISOString().split('T')[0];
+        const response = await fetch('/ticket/list', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            monitorName,
+            airline,
+            destination,
+            departure,
+            date: formattedDate // 날짜 형식
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`Error: ${response.status}`);
+        }
+  
+        const result = await response.json();
+        setFlightData(result);
+      } catch (error) {
+        console.error("목록을 가져오는중 에러발생", error);
+        setShowError(true);
+      }
+
     } else {
       setShowError(true);
-      setHasSearched(false); // 검색 버튼을 클릭했지만 입력값이 없으므로 false로 설정
+      window.alert('입력값을 모두 입력해주세요');
+      setHasSearched(false);
     }
   };
   
-  if (showError) {
-    return <Err_Comp />;
-  }
   
   if (hasSearched && !showError) { // 검색이 진행되었으며, 에러가 아닐 경우에만 List 컴포넌트를 보여줌
-    return <List title="항공편_001" data={sampleData} />;
+    return <List title={monitorName} data={flightData} />;
+  }
+  else if (hasSearched && showError) { // 검색이 진행되었으며, 에러일경우(현재는 목록을 못갖고오는상태)
+    return <List title={monitorName} data={sampleData} />;
   }
   
   return (
@@ -129,12 +162,12 @@ function Search() {
             <Flatpickr
               className="your-classname-if-needed"
               options={{ dateFormat: 'Y-m-d' }}
-              onChange={(selectedDates) => setDate(selectedDates[0].toISOString().split('T')[0])}
+              onChange={(selectedDates) => setDate(selectedDates[0])} // 이 부분을 수정
               placeholder="날짜 선택"
             />
           </div>
         </div>
-        <button className="search-button" onClick={handleSearch}>감시</button>
+        <button className="search-button" onClick={handleSearch}>검색</button>
       </div>
     </div>
   );
@@ -142,3 +175,5 @@ function Search() {
 
 
 export default Search;
+
+

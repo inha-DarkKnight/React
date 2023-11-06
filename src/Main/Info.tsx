@@ -1,29 +1,21 @@
 import '../css/info.css';
+import { Stopover } from '../type/types';
 
-interface Stopover {
-    항공사: string;
-    코드: string;
-    출발: Date;
-    도착: Date;
-    우등석여부: string;
-    인터넷가격: number;
-    출발공항: string;
-    도착공항: string;
-}
 
-const calculateDuration = (start: Date, end: Date) => {
+function calculateDuration(start: Date, end: Date) {
     const diff = end.getTime() - start.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours}시간 ${minutes}분`;
-};
-
-const calculateWaitingTime = (end: Date, start: Date) => {
+  }
+  
+  function calculateWaitingTime(end: Date, start: Date) {
     const diff = start.getTime() - end.getTime();
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     return `${hours}시간 ${minutes}분`;
-};
+  }
+  
 
 interface InfoProps {
     isOpen: boolean;
@@ -46,20 +38,20 @@ function Info({ isOpen, data, onClose }: InfoProps) {
         <div className="info-overlay info-fade-in-down" onClick={handleBackgroundClick}>
             <div className="info-popup">
                 {data.map((stop, index) => {
-                    const duration = calculateDuration(stop.출발, stop.도착);
+                    const duration = calculateDuration(stop.departureDate, stop.destinationDate);
                     return (
                         <div key={index} className="stopover-section">
-                            <h3>{stop.항공사} {stop.코드}</h3>
+                            <h3>{stop.airline} {stop.flightNumber}</h3>
                             <div className="table-row">
                                 <span className="duration-cell">{duration}</span>
                                 <div className="time-cell">
-                                    <p>{stop.출발.toLocaleTimeString()} {stop.출발공항}</p>
-                                    <p>{stop.도착.toLocaleTimeString()} {stop.도착공항}</p>
+                                    <p>{stop.departureDate.toLocaleTimeString()} {stop.departure}</p>
+                                    <p>{stop.destinationDate.toLocaleTimeString()} {stop.destination}</p>
                                 </div>
                             </div>
                             {index !== data.length - 1 && (
                                 <div className="waiting-time">
-                                    <span>공항 내 연결: {calculateWaitingTime(stop.도착, data[index + 1].출발)}</span>
+                                    <span>공항 내 연결: {calculateWaitingTime(stop.destinationDate, data[index + 1].departureDate)}</span>
                                 </div>
                             )}
                         </div>
