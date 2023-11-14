@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import '../css/List.css'
 import Info from './Info'
 import { Stopover } from '../type/types';
@@ -14,7 +14,20 @@ interface ListProps {
   data: FlightData[];
 }
 
+
+function convertDatesInData(data: FlightData[]) { //Date로 변경
+  return data.map(flight => ({
+    ...flight,
+    stopover: flight.stopover?.map(stop => ({
+      ...stop,
+      departureDate: new Date(stop.departureDate),
+      destinationDate: new Date(stop.destinationDate)
+    }))
+  }));
+}
+
 function List({ title, data }: ListProps) {
+    const processedData = convertDatesInData(data);
 
     const [isOpen, setIsOpen] = useState(false);
     const [infoData, setInfoData] = useState<Stopover[] | null>(null);
@@ -37,8 +50,9 @@ function List({ title, data }: ListProps) {
       };
 
     const handleRegisterMonitoring = async (flightData: FlightData, email: string) => {
-        const response = await fetch('/monitoring/register', {
+        const response = await fetch('http://localhost:8080/monitoring/register', {
             method: 'POST',
+            mode: 'cors',
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -60,7 +74,7 @@ function List({ title, data }: ListProps) {
 
     return (
         <div className="list-container">
-          <h3>{title}에서 {data.length}개의 결과를 찾았습니다!</h3>
+          <h3>{title}에서 {processedData.length}개의 결과를 찾았습니다!</h3>
           <table>
           <thead>
             <tr>
@@ -77,7 +91,7 @@ function List({ title, data }: ListProps) {
             </tr>
             </thead>
             <tbody>
-              {data.map((flight, index) => {
+              {processedData.map((flight, index) => {
                 const isFirstStopover = flight.stopover && flight.stopover[0];
                 const isLastStopover = flight.stopover && flight.stopover[flight.stopover.length - 1];
     

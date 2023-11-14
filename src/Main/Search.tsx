@@ -1,17 +1,12 @@
 import { useState } from 'react';
-import Err_Comp from './err_comp'
 import List from './List'
 import Flatpickr from "react-flatpickr";
 import '../css/main.css'
 import '../css/Search.css';
 import "flatpickr/dist/themes/material_green.css";
-import { title } from 'process';
-
 
 
 function Search() {
-
-  
 
   const sampleData = [
     {
@@ -59,46 +54,45 @@ function Search() {
   
 
   const [showError, setShowError] = useState(false);
-  const [monitorName, setMonitorName] = useState("");
+  const [title, settitle] = useState("");
   const [airline, setAirline] = useState("");
   const [destination, setDestination] = useState("");
   const [departure, setDeparture] = useState("");
-  const [date, setDate] = useState(new Date());
+  const [departureDate, setdepartureDate] = useState(new Date());
   const [hasSearched, setHasSearched] = useState(false);
   const [flightData, setFlightData] = useState([]);
 
   async function handleSearch() {
-    if (monitorName && airline && destination && departure && date) {
+    if (title && airline && destination && departure && departureDate) {
       setShowError(false);
-      setHasSearched(true); 
-
+      setHasSearched(true);
+  
       try {
-        const formattedDate = date.toISOString().split('T')[0];
-        const response = await fetch('/ticket/list', {
-          method: 'POST',
+        const formattedDate = departureDate.toISOString().split('T')[0];
+        const queryParams = new URLSearchParams({
+          airline,
+          destination,
+          departure,
+          departureDate: formattedDate
+        }).toString();
+        
+        const response = await fetch(`http://localhost:8080/spiderbot/list?${queryParams}`, {
+          method: 'GET',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            monitorName,
-            airline,
-            destination,
-            departure,
-            date: formattedDate // 날짜 형식
-          }),
         });
   
         if (!response.ok) {
           throw new Error(`Error: ${response.status}`);
         }
-  
         const result = await response.json();
         setFlightData(result);
       } catch (error) {
-        console.error("목록을 가져오는중 에러발생", error);
+        console.error("목록을 가져오는 중 에러 발생", error);
         setShowError(true);
       }
-
+  
     } else {
       setShowError(true);
       window.alert('입력값을 모두 입력해주세요');
@@ -108,10 +102,10 @@ function Search() {
   
   
   if (hasSearched && !showError) { // 검색이 진행되었으며, 에러가 아닐 경우에만 List 컴포넌트를 보여줌
-    return <List title={monitorName} data={flightData} />;
+    return <List title={title} data={flightData} />;
   }
   else if (hasSearched && showError) { // 검색이 진행되었으며, 에러일경우(현재는 목록을 못갖고오는상태)
-    return <List title={monitorName} data={sampleData} />;
+    return <List title={title} data={sampleData} />;
   }
   
   return (
@@ -123,8 +117,8 @@ function Search() {
             type="text"
             placeholder="감시이름_001"
             className="monitor-name-input"
-            value={monitorName}
-            onChange={(e) => setMonitorName(e.target.value)}
+            value={title}
+            onChange={(e) => settitle(e.target.value)}
           />
         </div>
         <div className="search-container">
@@ -162,7 +156,7 @@ function Search() {
             <Flatpickr
               className="your-classname-if-needed"
               options={{ dateFormat: 'Y-m-d' }}
-              onChange={(selectedDates) => setDate(selectedDates[0])} // 이 부분을 수정
+              onChange={(selecteddepartureDates) => setdepartureDate(selecteddepartureDates[0])}
               placeholder="날짜 선택"
             />
           </div>

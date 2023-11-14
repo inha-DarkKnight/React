@@ -4,7 +4,7 @@ import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import './css/fade.css';
 import Main from './Start/Main';
 import Search from './Main/Search';
-import SearchList from './Main/SearchList';
+import ResultList from './Main/ResultList';
 import MonitorPage from './MyPage/MonitorPage';
 import Head from './Main/Header';
 
@@ -34,7 +34,7 @@ function AppContent() {
             <Route path="/" element={<Main />} />
             <Route path="/search" element={<Search />} />
             <Route path="/monitor" element={<MonitorPage />} />
-            <Route path="/searchlist" element={<SearchList />} />
+            <Route path="/resultlist" element={<ResultList />} />
           </Routes>
         </CSSTransition>
       </TransitionGroup>

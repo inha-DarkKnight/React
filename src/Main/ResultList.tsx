@@ -57,20 +57,39 @@ function SearchList() {
   const [data, setData] = useState<FlightData[]>([]);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchMonitoringData = async () => {
       try {
-        const response = await fetch('/spiderbot/list');
-        const jsonData = await response.json();
-        setData(jsonData);
+        const response = await fetch('http://localhost:8080/monitoring/list');
+        const monitoringData: FlightData[] = await response.json();
+        setData(monitoringData);
+        fetchTicketList(monitoringData);
       } catch (error) {
-        console.error("Fetching data failed", error);
+        console.error("Fetching monitoring data failed", error);
       }
     };
 
-    fetchData();
+    const fetchTicketList = async (monitoringData: FlightData[]) => {
+      try {
+        const request_ids = monitoringData.map(data => data.request_id);
+        console.log(request_ids);
+        const response = await fetch('http://localhost:8080/tickets/list', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ request_ids }),
+        });
+        const ticketListData: FlightData[] = await response.json();
+        setData(ticketListData);
+      } catch (error) {
+        console.error("Fetching ticket list failed", error);
+      }
+    };
+
+    fetchMonitoringData();
   }, []);
 
-    return <Result data={sampleData} />; //data로 변경시 WAS와의 통신하여 좌석이 있는 항목만 불러옴
+  return <Result data={sampleData} />; //data로 변경시 WAS와의 통신하여 좌석이 있는 항목만 불러옴
 }
 
 export default SearchList;

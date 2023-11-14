@@ -1,33 +1,26 @@
 import { useEffect, useState } from 'react';
 import Monitor from './Monitor'
 
+interface Stopover {
+    flightNumber: string;
+    departure: string;
+    destination: string;
+    departureDate: string;
+    destinationDate: string;
+    price: number;
+    isSoldOut: boolean;
+    link: string;
+    airline: string;
+}
+
 interface MonitorItem {
     title: string;
     request_id: string;
-    airline: string;
-    departure: string;
-    destination: string;
-    departureDate: Date;
+    flightData: {
+        stopover: Stopover[];
+    };
+    email: string;
 }
-
-const sampleData = [
-    {
-        request_id: 'req_001',
-        title: '감시항목_001',
-        airline: '아시아나',
-        departure: '서울(인천)',
-        destination: '도쿄(나리타)',
-        departureDate: new Date('2023-09-30')
-    },
-    {
-        request_id: 'req_002',
-        title: '감시항목_002',
-        airline: '대한항공',
-        departure: '서울(인천)',
-        destination: '뉴욕(케네디)',
-        departureDate: new Date('2023-11-02')
-    }
-];
 
 function MonitorPage() {
     const [data, setData] = useState<MonitorItem[]>([]);
@@ -35,7 +28,7 @@ function MonitorPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('/Monitoring/list'); 
+                const response = await fetch('http://localhost:8080/monitoring/list'); 
                 if (!response.ok) {
                     throw new Error('네트워크 에러');
                 }
@@ -48,10 +41,7 @@ function MonitorPage() {
 
         fetchData(); // 데이터 가져옴
     }, []);
-
-
-
-    return <Monitor initialData={sampleData} />; //sampleData->data로 변경시 WAS와 통신
+    return <Monitor initialData={data} />; //sampleData->data로 변경시 WAS와 통신하여 가져옴
 }
 
 export default MonitorPage;

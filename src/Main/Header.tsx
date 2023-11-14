@@ -18,7 +18,7 @@ function Header() {
                   <Link to="/search" className="header-item"><span>항공표</span></Link>
               </div>
               <div className="header-right">
-                  <Link to="/searchlist">
+                  <Link to="/resultlist">
                   <img src={alarm_icon} alt="Alarm" className="icon" />
                   </Link>
                   <Link to="/monitor">
