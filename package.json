@@ -1,6 +1,7 @@
 {
   "name": "a",
   "version": "0.1.0",
+  "proxy": "http://localhost:8080",
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^5.17.0",
@@ -46,7 +47,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.0.0",
     "@types/react-flatpickr": "^3.8.10",
-    "@babel/plugin-proposal-private-property-in-object": "^7.0.0"
+    "http-proxy-middleware": "^2.0.6"
   }
 }
