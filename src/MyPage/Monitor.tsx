@@ -1,5 +1,6 @@
 import '../css/Monitor.css';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
+import airports from '../json/IATA_airport.json';
 
 interface Stopover {
     flightNumber: string;
@@ -45,10 +46,14 @@ function Monitor({ initialData }: MonitorProps) {
         setData(updatedData);
     }, [initialData]);
 
+    const findAirportNameByIata = (iataCode:string) => {
+        const airport = airports.find(airport => airport.IATA === iataCode);
+        return airport ? airport.airportName_ko : iataCode;
+      };
 
     const onDelete = async (request_id: string, index: number) => {
         try {
-            const response = await fetch(`http://localhost:8080/monitoring/delete/${request_id}`, {
+            const response = await fetch(`${process.env.REACT_APP_WAS_URL}/monitoring/delete/${request_id}`, {
                 method: 'DELETE',
             });
             if (!response.ok) {
@@ -75,8 +80,8 @@ function Monitor({ initialData }: MonitorProps) {
                     <div className="monitor-box">
                         <div className="monitor-details">
                             <div>{firstStopover.airline}</div>
-                            <div>{firstStopover.departure}</div>
-                            <div>{lastStopover.destination}</div>
+                            <div>{findAirportNameByIata(firstStopover.departure)}</div>
+                            <div>{findAirportNameByIata(lastStopover.destination)}</div>
                             <div>{
                                 departureDate instanceof Date && !isNaN(departureDate.getTime()) 
                                 ? departureDate.toLocaleDateString() 

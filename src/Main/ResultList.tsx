@@ -19,7 +19,8 @@ const sampleData =[
         departure: "인천국제공항",
         destination: "오사카",
         link: "https://flyasiana.com/",
-        isSoldOut: false
+        isSoldOut: false,
+        timeTaken : "1115"
       },
       {
         airline: "ASIANA AIRLINES",
@@ -30,7 +31,8 @@ const sampleData =[
         departure: "오사카",
         destination: "도쿄 나리타",
         link: "https://flyasiana.com/",
-        isSoldOut: false
+        isSoldOut: false,
+        timeTaken : "0509"
       }
     ]
   },
@@ -47,7 +49,8 @@ const sampleData =[
         departure: "부산 김해국제공항",
         destination: "나고야",
         link: "https://www.koreanair.com/?hl=ko",
-        isSoldOut: false
+        isSoldOut: false,
+        timeTaken : "1115"
       }
     ]
   }
@@ -59,7 +62,7 @@ function SearchList() {
   useEffect(() => {
     const fetchMonitoringData = async () => {
       try {
-        const response = await fetch('http://localhost:8080/monitoring/list');
+        const response = await fetch(`${process.env.REACT_APP_WAS_URL}/monitoring/list`);
         const monitoringData: FlightData[] = await response.json();
         setData(monitoringData);
         fetchTicketList(monitoringData);
@@ -72,7 +75,7 @@ function SearchList() {
       try {
         const request_ids = monitoringData.map(data => data.request_id);
         console.log(request_ids);
-        const response = await fetch('http://localhost:8080/tickets/list', {
+        const response = await fetch(`${process.env.REACT_APP_WAS_URL}/tickets/list`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

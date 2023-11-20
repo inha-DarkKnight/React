@@ -28,7 +28,7 @@ function MonitorPage() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch('http://localhost:8080/monitoring/list'); 
+                const response = await fetch(`${process.env.REACT_APP_WAS_URL}/monitoring/list`); 
                 if (!response.ok) {
                     throw new Error('네트워크 에러');
                 }

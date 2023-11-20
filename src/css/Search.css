@@ -1,4 +1,18 @@
 /* Search.css */
+.suggestions-popup {
+  position: absolute;
+  z-index: 1000;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 55px;
+}
+
+.search-item {
+  position: relative;
+}
 
 .search-main-container {
     display: flex;

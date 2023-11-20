@@ -2,6 +2,7 @@ import { useState } from 'react';
 import '../css/List.css'
 import Info from './Info'
 import { Stopover } from '../type/types';
+import airports from '../json/IATA_airport.json';
 
 
   
@@ -27,6 +28,8 @@ function convertDatesInData(data: FlightData[]) { //Date로 변경
 }
 
 function List({ title, data }: ListProps) {
+  
+    console.log(data)
     const processedData = convertDatesInData(data);
 
     const [isOpen, setIsOpen] = useState(false);
@@ -41,16 +44,28 @@ function List({ title, data }: ListProps) {
       setIsOpen(false);
       setInfoData(null);
     };
+      const parseDuration = (durationString: string) => {
+        const matches = durationString.match(/(\d+)시간 (\d+)분/);
+        if (matches && matches.length === 3) {
+            const hours = parseInt(matches[1], 10);
+            const minutes = parseInt(matches[2], 10);
+            return hours * 60 + minutes;
+        }
+        return 0;
+    };
+    const calculateTotalDuration = (stopovers: Stopover[]) => {
+      const totalMinutes = stopovers.reduce((sum, stop) => {
+          const timeTakenMinutes = parseDuration(stop.timeTaken);
+          return sum + timeTakenMinutes;
+      }, 0);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${hours}시간 ${minutes}분`;
+  };
 
-    const calculateDuration = (start: Date, end: Date) => {
-        const diff = end.getTime() - start.getTime();
-        const hours = Math.floor(diff / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        return `${hours}시간 ${minutes}분`;
-      };
 
     const handleRegisterMonitoring = async (flightData: FlightData, email: string) => {
-        const response = await fetch('http://localhost:8080/monitoring/register', {
+        const response = await fetch(`${process.env.REACT_APP_WAS_URL}/monitoring/register`, {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -71,6 +86,21 @@ function List({ title, data }: ListProps) {
             window.alert('감시 항목 등록 실패, 네트워크 에러');
         }
     };
+    const checkIfSoldOut = (stopovers: Stopover[]) => {
+      return stopovers.some(stop => stop.isSoldOut);
+    };
+
+    const calculateTotalPrice = (stopovers: Stopover[]) => {
+      const isSoldOut = checkIfSoldOut(stopovers);
+      if (isSoldOut) {
+        return "매진됨";
+      }
+      return stopovers.reduce((sum, stop) => sum + stop.price, 0);
+    };
+    const findAirportNameByIata = (iataCode:string) => {
+      const airport = airports.find(airport => airport.IATA === iataCode);
+      return airport ? airport.airportName_ko : iataCode;
+    };
 
     return (
         <div className="list-container">
@@ -87,6 +117,7 @@ function List({ title, data }: ListProps) {
                 <th>출발지</th>
                 <th>도착지</th>
                 <th>소요시간</th>
+                <th>매진여부</th>
                 <th>감시등록</th>
             </tr>
             </thead>
@@ -94,13 +125,20 @@ function List({ title, data }: ListProps) {
               {processedData.map((flight, index) => {
                 const isFirstStopover = flight.stopover && flight.stopover[0];
                 const isLastStopover = flight.stopover && flight.stopover[flight.stopover.length - 1];
-    
-                const totalInternetPrice = flight.stopover ? flight.stopover.reduce((sum, stop) => sum + stop.price, 0) : 0;
+                const departureIata = isFirstStopover ? isFirstStopover.departure : null;
+                const destinationIata = isLastStopover ? isLastStopover.destination : null;
+                const departureAirportName = departureIata ? findAirportNameByIata(departureIata) : 'N/A';
+                const destinationAirportName = destinationIata ? findAirportNameByIata(destinationIata) : 'N/A';
+        
+                const isSoldOut = flight.stopover ? checkIfSoldOut(flight.stopover) : false;
+                const totalPrice = flight.stopover ? flight.stopover.reduce((sum, stop) => sum + stop.price, 0) : 0;
+                const displayPrice = isSoldOut ? "매진됨" : totalPrice;
                         // 소요시간 계산
+                        
                 let duration = 'N/A';
-                if (isFirstStopover && isLastStopover) {
-                    duration = calculateDuration(isFirstStopover.departureDate, isLastStopover.destinationDate);
-                }
+                if (flight.stopover && flight.stopover.length > 0) {
+                  duration = calculateTotalDuration(flight.stopover);
+              }
 
                 return (
                   <tr key={index}>
@@ -109,7 +147,7 @@ function List({ title, data }: ListProps) {
                       {flight.stopover && flight.stopover.length === 1 ? "직항" : (
                         <a href="#" onClick={(e) => {
                           e.preventDefault();
-                          handleOpenInfo(flight.stopover!);  // stopover 리스트를 Info 컴포넌트로 전달
+                          handleOpenInfo(flight.stopover!);
                         }}>
                           경유
                         </a>)}
@@ -117,11 +155,12 @@ function List({ title, data }: ListProps) {
                     <td>{isFirstStopover ? isFirstStopover.flightNumber : 'N/A'}</td>
                     <td>{isFirstStopover ? isFirstStopover.departureDate.toLocaleTimeString() : 'N/A'}</td>
                     <td>{isLastStopover ? isLastStopover.destinationDate.toLocaleTimeString() : 'N/A'}</td>
-                    <td>{totalInternetPrice}</td>
-                    <td>{isFirstStopover ? isFirstStopover.departure : 'N/A'}</td>
-                    <td>{isLastStopover ? isLastStopover.destination : 'N/A'}</td>
+                    <td>{displayPrice}</td>
+                    <td>{departureAirportName}</td>
+                    <td>{destinationAirportName}</td>
                     <td>{duration}</td>
-                    <td><button onClick={() => handleRegisterMonitoring(flight, 'example@example.com')}>등록</button></td>
+                    <td>{isSoldOut ? "매진됨" : "매진안됨"}</td>
+                    <td><button onClick={() => handleRegisterMonitoring(flight, 'example@example.com')}>감시 등록</button></td>
                   </tr>
                 );
               })}

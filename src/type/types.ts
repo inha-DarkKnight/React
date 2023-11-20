@@ -8,6 +8,7 @@ export interface Stopover {
     isSoldOut: boolean;
     link: string;
     airline: string;
+    timeTaken : string;
   }
 
   export interface FlightData {
@@ -15,3 +16,15 @@ export interface Stopover {
     request_id: string;
     stopover: Stopover[];
   }
+
+  export interface Airport {
+    cnt: string;
+    airportName_ko: string;
+    airportName_eng: string;
+    IATA: string;
+    ICAO: string;
+    countryName_kor: string;
+    countryName_eng: string;
+    cityName_kor: string;
+    cityName_eng: string;
+}
