@@ -1,23 +1,24 @@
 {
   "files": {
-    "main.css": "/static/css/main.9782d4b9.css",
-    "main.js": "/static/js/main.ffeae76f.js",
+    "main.css": "/static/css/main.c9b065ff.css",
+    "main.js": "/static/js/main.2d42bfba.js",
     "static/js/787.037d72d9.chunk.js": "/static/js/787.037d72d9.chunk.js",
     "static/media/NotoSansKR-Light.ttf": "/static/media/NotoSansKR-Light.eef1c4b85baf52cc28a7.ttf",
     "static/media/NotoSansKR-Bold.ttf": "/static/media/NotoSansKR-Bold.f064e139058bfd9df2fb.ttf",
     "static/media/NotoSansKR-Medium.ttf": "/static/media/NotoSansKR-Medium.b9d6e1b3e7a3d63546cc.ttf",
     "static/media/NotoSansKR-ExtraBold.ttf": "/static/media/NotoSansKR-ExtraBold.a30f1f0b3b461fff07a7.ttf",
+    "static/media/Loading.gif": "/static/media/Loading.e29bafebf1d5de640651.gif",
     "static/media/logo.png": "/static/media/logo.dd08843ac59cc82bd121.png",
     "static/media/airplane.png": "/static/media/airplane.83ea3ff89c5fc9330cc4.png",
     "static/media/delete.png": "/static/media/delete.3c662b752278fc52f408.png",
     "static/media/logo2.png": "/static/media/logo2.2a1d7581b8365d58d9c8.png",
     "index.html": "/index.html",
-    "main.9782d4b9.css.map": "/static/css/main.9782d4b9.css.map",
-    "main.ffeae76f.js.map": "/static/js/main.ffeae76f.js.map",
+    "main.c9b065ff.css.map": "/static/css/main.c9b065ff.css.map",
+    "main.2d42bfba.js.map": "/static/js/main.2d42bfba.js.map",
     "787.037d72d9.chunk.js.map": "/static/js/787.037d72d9.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.9782d4b9.css",
-    "static/js/main.ffeae76f.js"
+    "static/css/main.c9b065ff.css",
+    "static/js/main.2d42bfba.js"
   ]
 }
