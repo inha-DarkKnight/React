@@ -1,9 +1,16 @@
 import { useEffect, useState } from 'react';
 import Result from './Result'
-import { Stopover } from '../type/types';
-import { FlightData } from '../type/types';
+import { Stopover,FlightData } from '../type/types';
 
 
+
+interface FlightData_no {
+  title: string;
+  request_id: string;
+  flightData: {
+    stopover: Stopover[];
+  }
+}
 
 const sampleData =[
   { 
@@ -60,39 +67,39 @@ function SearchList() {
   const [data, setData] = useState<FlightData[]>([]);
 
   useEffect(() => {
-    const fetchMonitoringData = async () => {
+    const fetchExistList = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_WAS_URL}/monitoring/existlist`);
+        const existListData = await response.json();
+        const existRequestIds = existListData.map((item: { _id: string; request_id: string }) => item.request_id);
+    
+        fetchMonitoringList(existRequestIds);
+      } catch (error) {
+        console.error("Fetching exist list failed", error);
+      }
+    };
+    
+    const fetchMonitoringList = async (existRequestIds: string[]) => {
       try {
         const response = await fetch(`${process.env.REACT_APP_WAS_URL}/monitoring/list`);
-        const monitoringData: FlightData[] = await response.json();
-        setData(monitoringData);
-        fetchTicketList(monitoringData);
+        const monitoringList: FlightData_no[] = await response.json();
+        const filteredData = monitoringList.filter(item => existRequestIds.includes(item.request_id));
+        // 데이터 구조 변경
+        const transformedData = filteredData.map(item => ({
+          request_id: item.request_id,
+          stopover: item.flightData.stopover,
+          title: item.title,
+        }));
+        setData(transformedData);
       } catch (error) {
-        console.error("Fetching monitoring data failed", error);
+        console.error("Fetching monitoring list failed", error);
       }
     };
 
-    const fetchTicketList = async (monitoringData: FlightData[]) => {
-      try {
-        const request_ids = monitoringData.map(data => data.request_id);
-        console.log(request_ids);
-        const response = await fetch(`${process.env.REACT_APP_WAS_URL}/tickets/list`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ request_ids }),
-        });
-        const ticketListData: FlightData[] = await response.json();
-        setData(ticketListData);
-      } catch (error) {
-        console.error("Fetching ticket list failed", error);
-      }
-    };
-
-    fetchMonitoringData();
+    fetchExistList();
   }, []);
-
-  return <Result data={sampleData} />; //data로 변경시 WAS와의 통신하여 좌석이 있는 항목만 불러옴
+  
+  return <Result data={data} />;
 }
 
 export default SearchList;

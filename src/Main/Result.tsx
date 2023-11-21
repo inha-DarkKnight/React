@@ -1,110 +1,140 @@
-import React, { useState } from 'react';
-import '../css/Result.css';
-import ErrComp from './err_comp'
-import Info from './Info'; 
-import { Stopover } from '../type/types';
-import { FlightData } from '../type/types';
+import { useState } from 'react';
+import '../css/List.css'
+import Info from './Info'
+import { Stopover, FlightData } from '../type/types';
+import airports from '../json/IATA_airport.json';
 
 
-
-interface ResultProps {
+interface ListProps {
   data: FlightData[];
 }
 
-function Result({ data }: ResultProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [infoData, setInfoData] = useState<Stopover[] | null>(null);
+
+function convertDatesInData(data: FlightData[]) { //Date로 변경
+  return data.map(flight => ({
+    ...flight,
+    stopover: flight.stopover?.map(stop => ({
+      ...stop,
+      departureDate: new Date(stop.departureDate),
+      destinationDate: new Date(stop.destinationDate)
+    }))
+  }));
+}
+
+function Result({ data }: ListProps) {
+    console.log(data);
+    const processedData = convertDatesInData(data);
+
+    const [isOpen, setIsOpen] = useState(false);
+    const [infoData, setInfoData] = useState<Stopover[] | null>(null);
   
-
-  const availableFlights = data.filter(flight =>
-    !flight.stopover.some(stop => stop.isSoldOut)
-  );
-  const isAllSoldOutOrEmpty = availableFlights.length === 0;
-
-  const handleOpenInfo = (stopovers: Stopover[]) => {
-    setInfoData(stopovers);
-    setIsOpen(true);
-  };
+    const handleOpenInfo = (stopovers: Stopover[]) => {
+      setInfoData(stopovers);
+      setIsOpen(true);
+    };
   
-  if (isAllSoldOutOrEmpty) {
-    return <ErrComp />; // 모든 항목이 매진되었거나 비어 있으면 ErrComp를 표시
-  }
+    const handleCloseInfo = () => {
+      setIsOpen(false);
+      setInfoData(null);
+    };
+    const parseDuration = (durationString: string) => {
+      if (!durationString) {
+        return 0; // 기본값을 0으로 설정
+      }
+      
+      const matches = durationString.match(/(\d+)시간 (\d+)분/);
+      if (matches && matches.length === 3) {
+        const hours = parseInt(matches[1], 10);
+        const minutes = parseInt(matches[2], 10);
+        return hours * 60 + minutes;
+      }
+      
+      return 0; // 형식 오류 등의 경우도 0으로 처리
+    };
+    
+    const calculateTotalDuration = (stopovers: Stopover[]) => {
+      
+      const totalMinutes = stopovers.reduce((sum, stop) => {
+          const timeTakenMinutes = parseDuration(stop.timeTaken);
+          return sum + timeTakenMinutes;
+      }, 0);
+      const hours = Math.floor(totalMinutes / 60);
+      const minutes = totalMinutes % 60;
+      return `${hours}시간 ${minutes}분`;
+    };
+    
+    const checkIfSoldOut = (stopovers: Stopover[]) => {
+      return stopovers.some(stop => stop.isSoldOut);
+    };
 
-  const handleCloseInfo = () => {
-    setIsOpen(false);
-    setInfoData(null);
-  };
+    const calculateTotalPrice = (stopovers: Stopover[]) => {
+      const isSoldOut = checkIfSoldOut(stopovers);
+      if (isSoldOut) {
+        return "매진됨";
+      }
+      return stopovers.reduce((sum, stop) => sum + stop.price, 0);
+    };
+    const findAirportNameByIata = (iataCode:string) => {
+      const airport = airports.find(airport => airport.IATA === iataCode);
+      return airport ? airport.airportName_ko : iataCode;
+    };
 
-  const calculateDuration = (start: Date, end: Date) => {
-    const diff = end.getTime() - start.getTime();
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    return `${hours}시간 ${minutes}분`;
-  };
+    return (
+      <div className="list-container">
+        {processedData.map((flight, flightIndex) => {
+          const firstStopover = flight.stopover[0];
+          const lastStopover = flight.stopover[flight.stopover.length - 1];
 
+          const departureAirportName = findAirportNameByIata(firstStopover.departure);
+          const destinationAirportName = findAirportNameByIata(lastStopover.destination);
 
-return (
-    <div className="search-list-container">
-      {availableFlights.map((item, index) => {
-        let isDirect = item.stopover.length <= 1;
-        let firstDeparture = item.stopover[0]?.departureDate;
-        let lastArrival = item.stopover[item.stopover.length - 1]?.destinationDate;
-        let totalInternetPrice = item.stopover.reduce((acc, stop) => acc + stop.price, 0);
-        let departureAirport = item.stopover[0]?.departure;
-        let arrivalAirport = item.stopover[item.stopover.length - 1]?.destination;
-        let TicketingLink = item.stopover[0]?.link;
-  
-        let totalDuration = firstDeparture && lastArrival ? calculateDuration(firstDeparture, lastArrival) : 'N/A';
-  
-        return (
-          <div key={index} className="search-item">
-            <h3>{item.title}에서 좌석을 찾았습니다!</h3>
-            <table>
-              <thead>
-                <tr>
-                  <th>항공사</th>
-                  <th>코드</th>
-                  <th>구분</th> 
-                  <th>출발시간</th>
-                  <th>도착시간</th>
-                  <th>가격</th>
-                  <th>출발지</th>
-                  <th>도착지</th>
-                  <th>소요시간</th>
-                  <th>예매링크</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{item.stopover[0]?.airline}</td>
-                  <td>{item.stopover[0]?.flightNumber}</td>
-                  <td>
-                    {isDirect ? (
-                      '직항'
-                    ) : (
+          const duration = calculateTotalDuration(flight.stopover);
+          const totalPrice = calculateTotalPrice(flight.stopover);
+
+          return (
+            <div key={flightIndex}>
+              <h3>{flight.title}에서 결과를 찾았습니다!</h3>
+              <table>
+                <thead>
+                  <tr>
+                    <th>항공사</th>
+                    <th>구분</th>
+                    <th>코드</th>
+                    <th>출발시간</th>
+                    <th>도착시간</th>
+                    <th>가격</th>
+                    <th>출발지</th>
+                    <th>도착지</th>
+                    <th>소요시간</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{firstStopover.airline}</td>
+                    <td>{flight.stopover.length === 1 ? "직항" : (
                       <a href="#" onClick={(e) => {
-                          e.preventDefault();
-                          handleOpenInfo(item.stopover);
-                        }}>경유</a>
-                    )}
-                  </td>
-                  <td>{firstDeparture?.toLocaleTimeString()}</td>
-                  <td>{lastArrival?.toLocaleTimeString()}</td>
-                  <td>{totalInternetPrice.toLocaleString()}원</td>
-                  <td>{departureAirport}</td>
-                  <td>{arrivalAirport}</td>
-                  <td>{totalDuration}</td>
-                  <td><a href={TicketingLink}>link</a></td>
-                </tr>
-              </tbody>
-            </table>
-            <Info isOpen={isOpen} data={infoData} onClose={handleCloseInfo} />
-          </div>
-        );
-      })}
-    </div>
-  );
-  
+                        e.preventDefault();
+                        handleOpenInfo(flight.stopover);
+                      }}>
+                        경유
+                      </a>)}
+                    </td>
+                    <td>{firstStopover.flightNumber}</td>
+                    <td>{firstStopover.departureDate.toLocaleTimeString()}</td>
+                    <td>{lastStopover.destinationDate.toLocaleTimeString()}</td>
+                    <td>{totalPrice}</td>
+                    <td>{departureAirportName}</td>
+                    <td>{destinationAirportName}</td>
+                    <td>{duration}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          );
+        })}
+        <Info isOpen={isOpen} data={infoData} onClose={handleCloseInfo} />
+      </div>
+    );
 }
 
 export default Result;
