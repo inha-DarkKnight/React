@@ -14,7 +14,7 @@ interface Stopover {
 }
 
 interface MonitorItem {
-    title: string;
+    //title: string;
     request_id: string;
     flightData: {
         stopover: Stopover[];

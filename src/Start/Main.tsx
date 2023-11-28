@@ -31,11 +31,33 @@ function Login(){
 
 function Main() {
   const [showRegister, setShowRegister] = useState(false);
+  async function toggleMonitoring() {
+    try {
+      const response = await fetch(`${process.env.REACT_APP_WAS_URL}/data-fetcher/toggle-monitoring`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.status); // 'Monitoring started' 또는 'Monitoring stopped'
+      } else {
+        alert('오류가 발생했습니다.');
+      }
+    } catch (error) {
+      alert('요청을 처리할 수 없습니다.');
+    }
+  }
+  const handleLogoClick = async () => {
+    await toggleMonitoring();
+  };
 
   return (
     <div className="login-container">
       <div className="left-section">
-        <img src={logo} alt="Logo" className="logo" />
+        <a href="#" onClick={handleLogoClick}><img src={logo} alt="Logo" className="logo" /></a>
       </div>
 
       <div className="right-section">
@@ -45,7 +67,7 @@ function Main() {
           className="signup-link"
           onClick={(e) => {
             e.preventDefault();
-            setShowRegister(!showRegister); //상ㅇ태전환
+            setShowRegister(!showRegister); //상태전환
           }}
         >
           <span className="text">{showRegister ? "로그인하러 가기" : "계정이 없으세요?"}</span>

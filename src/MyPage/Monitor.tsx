@@ -15,7 +15,7 @@ interface Stopover {
 }
 
 interface MonitorItem {
-    title: string;
+    //title: string;
     request_id: string;
     flightData: {
         stopover: Stopover[];
@@ -72,21 +72,19 @@ function Monitor({ initialData }: MonitorProps) {
           {data.map((item, index) => {
     const firstStopover = item.flightData.stopover[0];
     const lastStopover = item.flightData.stopover[item.flightData.stopover.length - 1];
-    const departureDate = new Date(firstStopover.departureDate);
+    const departureDateString = firstStopover.departureDate; // "2023-12-13T09:50:00.000Z"
+    const departureDate = departureDateString.substring(0, 10); // "2023-12-13"
+
 
     return (
         <div key={index} className="monitor-wrapper">
-                    <div className="monitor-name">{item.title}</div>
+                    {/*<div className="monitor-name">{item.title}</div>*/}
                     <div className="monitor-box">
                         <div className="monitor-details">
                             <div>{firstStopover.airline}</div>
                             <div>{findAirportNameByIata(firstStopover.departure)}</div>
                             <div>{findAirportNameByIata(lastStopover.destination)}</div>
-                            <div>{
-                                departureDate instanceof Date && !isNaN(departureDate.getTime()) 
-                                ? departureDate.toLocaleDateString() 
-                                : '날짜 정보 없음'
-                            }</div>
+                            <div>{departureDate}</div>
                         </div>
                         <button className="delete-button" onClick={() => onDelete(item.request_id, index)}></button>
                     </div>

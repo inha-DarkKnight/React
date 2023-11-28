@@ -4,14 +4,13 @@ import Info from './Info'
 import { Stopover } from '../type/types';
 import airports from '../json/IATA_airport.json';
 
-
+const email = "eapp2003@naver.com";
   
 interface FlightData {
     stopover?: Stopover[];
   }
 
 interface ListProps {
-  title: string;
   data: FlightData[];
 }
 
@@ -27,7 +26,7 @@ function convertDatesInData(data: FlightData[]) { //Date로 변경
   }));
 }
 
-function List({ title, data }: ListProps) {
+function List({ data }: ListProps) {
   
     console.log(data)
     const processedData = convertDatesInData(data);
@@ -64,7 +63,7 @@ function List({ title, data }: ListProps) {
   };
 
 
-    const handleRegisterMonitoring = async (flightData: FlightData, email: string) => {
+    const handleRegisterMonitoring = async (flightData: FlightData) => {
         const response = await fetch(`${process.env.REACT_APP_WAS_URL}/monitoring/register`, {
             method: 'POST',
             mode: 'cors',
@@ -72,7 +71,6 @@ function List({ title, data }: ListProps) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                title,
                 flightData,
                 email
             })
@@ -104,7 +102,7 @@ function List({ title, data }: ListProps) {
 
     return (
         <div className="list-container">
-          <h3>{title}에서 {processedData.length}개의 결과를 찾았습니다!</h3>
+          <h3>{processedData.length}개의 결과를 찾았습니다!</h3>
           <table>
           <thead>
             <tr>
@@ -160,7 +158,7 @@ function List({ title, data }: ListProps) {
                     <td>{destinationAirportName}</td>
                     <td>{duration}</td>
                     <td>{isSoldOut ? "매진됨" : "매진안됨"}</td>
-                    <td><button onClick={() => handleRegisterMonitoring(flight, 'example@example.com')}>감시 등록</button></td>
+                    <td><button onClick={() => handleRegisterMonitoring(flight)}>감시 등록</button></td>
                   </tr>
                 );
               })}

@@ -12,7 +12,7 @@ export interface Stopover {
   }
 
   export interface FlightData {
-    title: string;
+    //title: string;
     request_id: string;
     stopover: Stopover[];
   }

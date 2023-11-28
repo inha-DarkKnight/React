@@ -59,7 +59,6 @@ const sampleData = [
 
 function Search() {
   const [showError, setShowError] = useState(false);
-  const [title, settitle] = useState("");
   const [airline, setAirline] = useState("");
   const [destination, setDestination] = useState(""); //실제 IATA코드
   const [departure, setDeparture] = useState("");
@@ -95,7 +94,7 @@ function Search() {
       return [];
     }
   }
-  
+  /*
   async function generateTitle(): Promise<string> {
     const tickets = await fetchMonitoringTickets();
     const lastNumber = tickets
@@ -105,7 +104,7 @@ function Search() {
       .reduce((max: number, num: number) => num > max ? num : max, 0);
   
     return `감시이름_${lastNumber + 1}`;
-  }
+  }*/
 
   {/* 추천검색어 로직 */}
   useEffect(() => {
@@ -174,6 +173,17 @@ function Search() {
   };
   
  {/* 추천검색어 로직 */}
+ function formatDateToKST(date: Date) : string {
+  const kstOffset = 9 * 60 * 60 * 1000; // KST는 UTC+9
+  const kstDate = new Date(date.getTime() + kstOffset);
+
+  let year = kstDate.getUTCFullYear();
+  let month = (kstDate.getUTCMonth() + 1).toString().padStart(2, '0');
+  let day = kstDate.getUTCDate().toString().padStart(2, '0');
+
+  return `${year}${month}${day}`;
+}
+
 
 
   async function handleSearch() {
@@ -190,7 +200,8 @@ function formatDate(dateString:string) :string {
 }
     if (destinationName && departureName && departureDate_temp) {
       setShowError(false);
-      setIsLoading(true);  
+      setIsLoading(true);
+      /*  
       if (!title) {
         try {
           const newTitle = await generateTitle();
@@ -199,13 +210,10 @@ function formatDate(dateString:string) :string {
           console.error("새로운 감시 이름을 생성하는 데 실패했습니다:", error);
           return; // 새 title 생성에 실패하면 검색을 중단
         }
-      }    
+      } */   
       try {
         
-        const formattedDate = departureDate_temp.toISOString().split('T')[0];
-        const formattedDate2 = formattedDate.toString();
-        const departureDate = formatDate(formattedDate2);
-
+        const departureDate = formatDateToKST(departureDate_temp)
         const queryParams = new URLSearchParams({
           flag,
           destination,
@@ -244,15 +252,16 @@ function formatDate(dateString:string) :string {
   };
   
   if (hasSearched && !showError) { // 검색이 진행되었으며, 에러가 아닐 경우에만 List 컴포넌트를 보여줌
-    return <List title={title} data={flightData} />;
+    return <List data={flightData} />;
   }
   else if (hasSearched && showError) { // 검색이 진행되었으며, 에러일경우(현재는 목록을 못갖고오는상태)
-    return <List title={title} data={sampleData} />;
+    return <List data={sampleData} />;
   }
   
   return (
     <div>
       <div className="search-main-container">
+        {/*
         <div className="monitor-name-container">
           <span className="monitor-name-label">감시이름</span>
           <input
@@ -262,7 +271,7 @@ function formatDate(dateString:string) :string {
             value={title}
             onChange={(e) => settitle(e.target.value)}
           />
-        </div>
+        </div>*/}
         <div className="search-container">
           {/*
           <div className="search-item">
@@ -324,7 +333,9 @@ function formatDate(dateString:string) :string {
             <Flatpickr
               className="your-classname-if-needed"
               options={{ dateFormat: 'Y-m-d' }}
-              onChange={(selecteddepartureDates) => setdepartureDate_temp(selecteddepartureDates[0])}
+              onChange={(selectedDates) => {
+                setdepartureDate_temp(selectedDates[0]);
+              }}
               placeholder="날짜 선택"
             />
           </div>

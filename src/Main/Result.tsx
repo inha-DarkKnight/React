@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../css/List.css'
 import Info from './Info'
 import { Stopover, FlightData } from '../type/types';
 import airports from '../json/IATA_airport.json';
+import Err_Comp from './err_comp';
 
 
 interface ListProps {
@@ -21,13 +22,17 @@ function convertDatesInData(data: FlightData[]) { //Date로 변경
   }));
 }
 
-function Result({ data }: ListProps) {
-    console.log(data);
-    const processedData = convertDatesInData(data);
-
+function Result({ data: initialData }: ListProps) {
+    
+  const [data, setData] = useState<FlightData[]>([]);
     const [isOpen, setIsOpen] = useState(false);
     const [infoData, setInfoData] = useState<Stopover[] | null>(null);
-  
+    const processedData = convertDatesInData(data);
+
+    useEffect(() => {
+      setData(initialData);
+    }, [initialData]);
+    const isDataEmpty = data.length === 0;
     const handleOpenInfo = (stopovers: Stopover[]) => {
       setInfoData(stopovers);
       setIsOpen(true);
@@ -79,9 +84,39 @@ function Result({ data }: ListProps) {
       return airport ? airport.airportName_ko : iataCode;
     };
 
+    const getStopoverLinks = (stopovers: Stopover[]) => {
+      return stopovers.map((stop, index) => (
+        <a key={index} href={stop.link} target="_blank" rel="noopener noreferrer">{stop.flightNumber}</a>
+      ));
+    };
+
+    const deleteAllResults = async () => {
+      try {
+        const response = await fetch(`${process.env.REACT_APP_WAS_URL}/monitoring/exist-deleteall`, {
+          method: 'DELETE'
+        });
+        if (response.ok) {
+          // 성공적으로 삭제되면, UI 상태 업데이트
+          setData([]);
+          console.log("모든 결과가 성공적으로 삭제되었습니다.");
+        } else {
+          throw new Error("서버에서 삭제를 완료하지 못했습니다.");
+        }
+      } catch (error) {
+        console.error("모든 결과 삭제 중 오류 발생", error);
+      }
+    };
+
     return (
+
       <div className="list-container">
+        {isDataEmpty ? (<Err_Comp />) : (
+          <>
+        <button className="delete-all-button" onClick={deleteAllResults}>
+          모든 결과 삭제
+        </button>
         {processedData.map((flight, flightIndex) => {
+           const stopoverLinks = getStopoverLinks(flight.stopover);
           const firstStopover = flight.stopover[0];
           const lastStopover = flight.stopover[flight.stopover.length - 1];
 
@@ -93,19 +128,20 @@ function Result({ data }: ListProps) {
 
           return (
             <div key={flightIndex}>
-              <h3>{flight.title}에서 결과를 찾았습니다!</h3>
+              <h3>결과를 찾았습니다!</h3>
               <table>
                 <thead>
                   <tr>
                     <th>항공사</th>
                     <th>구분</th>
-                    <th>코드</th>
+                    <th>항공편코드</th>
                     <th>출발시간</th>
                     <th>도착시간</th>
                     <th>가격</th>
                     <th>출발지</th>
                     <th>도착지</th>
                     <th>소요시간</th>
+                    <th>최저가 구매링크</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -126,6 +162,7 @@ function Result({ data }: ListProps) {
                     <td>{departureAirportName}</td>
                     <td>{destinationAirportName}</td>
                     <td>{duration}</td>
+                    <td>{stopoverLinks.length > 1 ? stopoverLinks : stopoverLinks[0]}</td>
                   </tr>
                 </tbody>
               </table>
@@ -133,6 +170,7 @@ function Result({ data }: ListProps) {
           );
         })}
         <Info isOpen={isOpen} data={infoData} onClose={handleCloseInfo} />
+        </>)}
       </div>
     );
 }
