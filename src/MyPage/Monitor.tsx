@@ -66,6 +66,15 @@ function Monitor({ initialData }: MonitorProps) {
         }
     };
 
+    // 항공편 유형 (직항 또는 경유) 결정
+    const getFlightType = (stopovers: Stopover[]) => {
+        return stopovers.length > 1 ? "경유" : "직항";
+    };
+
+    // 모든 경유의 가격 합산
+    const getTotalPrice = (stopovers: Stopover[]) => {
+        return stopovers.reduce((sum, stopover) => sum + stopover.price, 0);
+    };
     return (
       <div className="monitor-container">
           <h3>감시중인 항목</h3>
@@ -75,6 +84,9 @@ function Monitor({ initialData }: MonitorProps) {
     const departureDateString = firstStopover.departureDate; // "2023-12-13T09:50:00.000Z"
     const departureDate = departureDateString.substring(0, 10); // "2023-12-13"
 
+    const flightType = getFlightType(item.flightData.stopover);
+    const totalPrice = getTotalPrice(item.flightData.stopover);
+
 
     return (
         <div key={index} className="monitor-wrapper">
@@ -82,8 +94,11 @@ function Monitor({ initialData }: MonitorProps) {
                     <div className="monitor-box">
                         <div className="monitor-details">
                             <div>{firstStopover.airline}</div>
+                            <div>{flightType}</div>
+                            <div>{firstStopover.flightNumber}</div>
                             <div>{findAirportNameByIata(firstStopover.departure)}</div>
                             <div>{findAirportNameByIata(lastStopover.destination)}</div>
+                            <div>{totalPrice}원</div>
                             <div>{departureDate}</div>
                         </div>
                         <button className="delete-button" onClick={() => onDelete(item.request_id, index)}></button>

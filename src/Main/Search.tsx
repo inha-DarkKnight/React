@@ -8,54 +8,7 @@ import airports from '../json/IATA_airport.json'; // JSON 파일을 가져옴
 import { Airport, FlightData } from '../type/types';
 import '../css/Loading.css';
 import loadgif from '../images/Loading.gif';
-  
-  
-const sampleData = [
-  {
-    stopover: [
-      {
-        airline: "ASIANA AIRLINES",
-        flightNumber: "OZ0108",
-        departureDate: new Date("2023-01-01T18:30:00"),
-        destinationDate: new Date("2023-01-01T19:30:00"),
-        price: 320700,
-        departure: "인천국제공항",
-        destination: "오사카",
-        link: "https://www.asianaairlines.com",
-        isSoldOut: false,
-        timeTaken : "1115"          
-      },
-      {
-        airline: "ASIANA AIRLINES",
-        flightNumber: "OZ0110",
-        departureDate: new Date("2023-01-01T20:00:00"),
-        destinationDate: new Date("2023-01-01T21:00:00"),
-        price: 200000,
-        departure: "오사카",
-        destination: "도쿄 나리타",
-        link: "https://www.asianaairlines.com",
-        isSoldOut: false,
-        timeTaken : "1115"
-      }
-    ]
-  },
-  {
-    stopover: [
-      {
-        airline: "AIR SEOUL",
-        flightNumber: "RS0704",
-        departureDate: new Date("2023-01-01T20:25:00"),
-        destinationDate: new Date("2023-01-01T22:50:00"),
-        price: 420700,
-        departure: "인천국제공항",
-        destination: "도쿄 나리타",
-        link: "https://www.airseoul.com",
-        isSoldOut: false,
-        timeTaken : "1115"
-      }
-    ]
-  }
-];
+
 
 function Search() {
   const [showError, setShowError] = useState(false);
@@ -220,7 +173,6 @@ function formatDate(dateString:string) :string {
           departure,
           departureDate,
         }).toString();
-        console.log(destination, departure)
         const response = await fetch(`${process.env.REACT_APP_SPIDER_BOT_URL}/spiderbot/list?${queryParams}`, {
           method: 'GET',
           headers: {
@@ -254,10 +206,8 @@ function formatDate(dateString:string) :string {
   if (hasSearched && !showError) { // 검색이 진행되었으며, 에러가 아닐 경우에만 List 컴포넌트를 보여줌
     return <List data={flightData} />;
   }
-  else if (hasSearched && showError) { // 검색이 진행되었으며, 에러일경우(현재는 목록을 못갖고오는상태)
-    return <List data={sampleData} />;
-  }
-  
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
   return (
     <div>
       <div className="search-main-container">
@@ -331,13 +281,16 @@ function formatDate(dateString:string) :string {
           <div className="search-item">
             <span className="search-label">날짜</span>
             <Flatpickr
-              className="your-classname-if-needed"
-              options={{ dateFormat: 'Y-m-d' }}
-              onChange={(selectedDates) => {
-                setdepartureDate_temp(selectedDates[0]);
-              }}
-              placeholder="날짜 선택"
-            />
+          className="your-classname-if-needed"
+          options={{
+            dateFormat: 'Y-m-d',
+            minDate: tomorrow // 최소 날짜 설정
+          }}
+          onChange={(selectedDates) => {
+            setdepartureDate_temp(selectedDates[0]);
+          }}
+          placeholder="날짜 선택"
+        />
           </div>
         </div>
         {isLoading && (
