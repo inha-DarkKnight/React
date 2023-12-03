@@ -4,7 +4,6 @@ import Info from './Info'
 import { Stopover } from '../type/types';
 import airports from '../json/IATA_airport.json';
 
-const email = "casdfghjke@naver.com";
   
 interface FlightData {
     stopover?: Stopover[];
@@ -33,7 +32,9 @@ function List({ data }: ListProps) {
 
     const [isOpen, setIsOpen] = useState(false);
     const [infoData, setInfoData] = useState<Stopover[] | null>(null);
-  
+    const [email, setEmail] = useState('');
+
+
     const handleOpenInfo = (stopovers: Stopover[]) => {
       setInfoData(stopovers);
       setIsOpen(true);
@@ -64,6 +65,10 @@ function List({ data }: ListProps) {
 
 
     const handleRegisterMonitoring = async (flightData: FlightData) => {
+      if (!email) {
+        window.alert('이메일을 입력해주세요.');
+        return;
+      }
         const response = await fetch(`${process.env.REACT_APP_WAS_URL}/monitoring/register`, {
             method: 'POST',
             mode: 'cors',
@@ -84,6 +89,9 @@ function List({ data }: ListProps) {
             window.alert('감시 항목 등록 실패, 네트워크 에러');
         }
     };
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setEmail(e.target.value);
+    };
     const checkIfSoldOut = (stopovers: Stopover[]) => {
       return stopovers.some(stop => stop.isSoldOut);
     };
@@ -102,6 +110,16 @@ function List({ data }: ListProps) {
 
     return (
         <div className="list-container">
+          <div className="email-input-container">
+            <label htmlFor="email">이메일:</label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={handleEmailChange}
+              placeholder="이메일을 입력하세요"
+            />
+          </div>
           <h3>{processedData.length}개의 결과를 찾았습니다!</h3>
           <table>
           <thead>

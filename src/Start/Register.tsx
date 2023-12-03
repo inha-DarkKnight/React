@@ -18,7 +18,7 @@ function Register() {
     
         // 회원가입 로직
       };
-      return (
+      return ( // 현재는 이메일등록
         <div className="Register-form">
           <div className="input-group">
             <label htmlFor="name">이름</label>
