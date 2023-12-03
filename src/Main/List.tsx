@@ -4,7 +4,7 @@ import Info from './Info'
 import { Stopover } from '../type/types';
 import airports from '../json/IATA_airport.json';
 
-const email = "eapp2003@naver.com";
+const email = "casdfghjke@naver.com";
   
 interface FlightData {
     stopover?: Stopover[];
