@@ -1,0 +1,24 @@
+{
+  "files": {
+    "main.css": "/static/css/main.cb67502f.css",
+    "main.js": "/static/js/main.cf722c9c.js",
+    "static/js/787.037d72d9.chunk.js": "/static/js/787.037d72d9.chunk.js",
+    "static/media/NotoSansKR-Light.ttf": "/static/media/NotoSansKR-Light.eef1c4b85baf52cc28a7.ttf",
+    "static/media/NotoSansKR-Bold.ttf": "/static/media/NotoSansKR-Bold.f064e139058bfd9df2fb.ttf",
+    "static/media/NotoSansKR-Medium.ttf": "/static/media/NotoSansKR-Medium.b9d6e1b3e7a3d63546cc.ttf",
+    "static/media/NotoSansKR-ExtraBold.ttf": "/static/media/NotoSansKR-ExtraBold.a30f1f0b3b461fff07a7.ttf",
+    "static/media/Loading.gif": "/static/media/Loading.e29bafebf1d5de640651.gif",
+    "static/media/logo.png": "/static/media/logo.dd08843ac59cc82bd121.png",
+    "static/media/airplane.png": "/static/media/airplane.83ea3ff89c5fc9330cc4.png",
+    "static/media/delete.png": "/static/media/delete.3c662b752278fc52f408.png",
+    "static/media/logo2.png": "/static/media/logo2.2a1d7581b8365d58d9c8.png",
+    "index.html": "/index.html",
+    "main.cb67502f.css.map": "/static/css/main.cb67502f.css.map",
+    "main.cf722c9c.js.map": "/static/js/main.cf722c9c.js.map",
+    "787.037d72d9.chunk.js.map": "/static/js/787.037d72d9.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.cb67502f.css",
+    "static/js/main.cf722c9c.js"
+  ]
+}
